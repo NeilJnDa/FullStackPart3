@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :detail'));
 morgan.token('detail', (req) => JSON.stringify(req.body));
 
-//  Deal with http request
+//  Deal with http requests
 app.get('/', (request, response) => { response.send('<h1>Hi!</h1>'); });
 app.get('/api/persons', (request, response, next) => {
     Person.find({})
@@ -38,7 +38,11 @@ app.get('/api/persons/:id', (request, response, next) => {
 });
 app.put('/api/persons/:id', (request, response, next) => {
     const { body } = request;
-    Person.findByIdAndUpdate(request.params.id, { $set: { number: body.number } })
+    Person.findByIdAndUpdate(
+        request.params.id,
+        { $set: { number: body.number } },
+        { new: true, runValidators: true },
+    )
         .then((person) => {
             if (person) {
                 console.log(person);
